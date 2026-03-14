@@ -84,6 +84,7 @@ export default {
         await this.$store.dispatch('user/login', this.loginForm)
         // 登录成功后通过路由跳转，由导航守卫处理用户信息获取和动态路由加载
         this.$router.push({ path: this.redirect || '/' })
+        this.loading = false
       } catch (error) {
         console.error('登录失败:', error)
         this.$message.error(error.message || '登录失败')
