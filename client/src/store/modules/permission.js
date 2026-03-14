@@ -54,6 +54,8 @@ const actions = {
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, perms)
       }
+      // 将 404 通配路由放在最后，确保动态路由能正常匹配
+      accessedRoutes = accessedRoutes.concat([{ path: '*', redirect: '/404', hidden: true }])
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
