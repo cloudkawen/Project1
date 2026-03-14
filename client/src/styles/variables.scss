@@ -1,25 +1,119 @@
-// sidebar
-$menuText:#bfcbd9;
-$menuActiveText:#409EFF;
-$subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
+// src/styles/variables.scss
+@import "./mixin.scss";
 
-$menuBg:#304156;
-$menuHover:#263445;
+// 侧边栏变量
+$menuBg: #304156;
+$menuText: #bfcbd9;
+$menuActiveText: #409eff;
+$menuHover: #263445;
+$subMenuBg: #1f2d3d;
+$subMenuHover: #001528;
+$subMenuActiveText: #f4f4f5; 
 
-$subMenuBg:#1f2d3d;
-$subMenuHover:#001528;
+// 布局变量
+$sidebarWidth: 200px;
+$sidebarCollapseWidth: 64px;
+$sideBarWidth: 200px;
 
-$sideBarWidth: 210px;
+// 顶部导航栏
+$navBarHeight: 50px;
+$navBarBg: #ffffff;
+$navBarText: #303133;
+$navBarActiveText: #409eff;
 
-// the :export directive is the magic sauce for webpack
-// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+// 标签栏
+$tagsViewHeight: 34px;
+$tagsViewBg: #ffffff;
+$tagsViewItemColor: #495060;
+$tagsViewItemActiveColor: #409eff;
+$tagsViewItemActiveBg: #ecf5ff;
+
+// 主要颜色
+$primary: #409eff;
+$success: #67c23a;
+$warning: #e6a23c;
+$danger: #f56c6c;
+$info: #909399;
+
+// 背景颜色
+$bgColor: #f0f2f5;
+$cardBg: #ffffff;
+$borderColor: #e4e7ed;
+
+// 文字颜色
+$textColor: #303133;
+$textColorSecondary: #606266;
+$textColorTertiary: #909399;
+$textColorQuaternary: #c0c4cc;
+
+// 边框颜色
+$borderColorLight: #ebeef5;
+$borderColorLighter: #f2f6fc;
+
+// 字体大小
+$fontSizeExtraSmall: 12px;
+$fontSizeSmall: 13px;
+$fontSizeBase: 14px;
+$fontSizeMedium: 16px;
+$fontSizeLarge: 18px;
+$fontSizeExtraLarge: 20px;
+
+// 边距
+$paddingBase: 20px;
+$paddingSmall: 10px;
+$paddingLarge: 30px;
+
+// 阴影
+$boxShadowLight: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+$boxShadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+$boxShadowDark: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
+
+// 圆角
+$borderRadiusSmall: 4px;
+$borderRadiusBase: 6px;
+$borderRadiusLarge: 8px;
+$borderRadiusRound: 20px;
+
+// 过渡动画
+$transitionDuration: 0.3s;
+$transitionFunction: ease-in-out;
+
+// 响应式断点
+$screen-xs: 480px;
+$screen-sm: 768px;
+$screen-md: 992px;
+$screen-lg: 1200px;
+$screen-xl: 1600px;
+
+// 导出SCSS变量给JavaScript使用
 :export {
+  sideBarWidth: $sideBarWidth;
+  sidebarWidth: $sidebarWidth;
+  sidebarCollapseWidth: $sidebarCollapseWidth;
+  menuBg: $menuBg;
   menuText: $menuText;
   menuActiveText: $menuActiveText;
-  subMenuActiveText: $subMenuActiveText;
-  menuBg: $menuBg;
   menuHover: $menuHover;
-  subMenuBg: $subMenuBg;
-  subMenuHover: $subMenuHover;
-  sideBarWidth: $sideBarWidth;
+  navBarHeight: $navBarHeight;
+  tagsViewHeight: $tagsViewHeight;
+  primary: $primary;
+  success: $success;
+  warning: $warning;
+  danger: $danger;
+  info: $info;
+}
+// 添加CSS变量
+:root {
+  --menuBg: #{$menuBg};
+  --menuText: #{$menuText};
+  --menuActiveText: #{$menuActiveText};
+  --menuHover: #{$menuHover};
+  --sidebarWidth: #{$sidebarWidth};
+  --sidebarCollapseWidth: #{$sidebarCollapseWidth};
+  --navBarHeight: #{$navBarHeight};
+  --primary: #{$primary};
+  --success: #{$success};
+  --warning: #{$warning};
+  --danger: #{$danger};
+  --info: #{$info};
 }

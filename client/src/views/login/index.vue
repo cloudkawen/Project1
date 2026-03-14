@@ -43,28 +43,15 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
 
-      <!-- <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div> -->
-
     </el-form>
   </div>
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
-
 export default {
   name: 'Login',
   data() {
-    // const validateUsername = (rule, value, callback) => {
-    //   if (!validUsername(value)) {
-    //     callback(new Error('请输入正确账号!'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
+    // 密码验证规则
     const validatePassword = (rule, value, callback) => {
       if (value.length < 4) {
         callback(new Error('密码长度小于4位!'))
@@ -72,9 +59,10 @@ export default {
         callback()
       }
     }
+    
     return {
       loginForm: {
-        username: '',
+        username: 'root',  // 默认填充，方便测试
         password: ''
       },
       loginRules: {
@@ -105,25 +93,48 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+    async handleLogin() {
+      try {
+        const valid = await this.$refs.loginForm.validate()
+        if (!valid) return
+
+        this.loading = true
+
+        // ✅ 1. 登录获取token
+        await this.$store.dispatch('user/login', this.loginForm)
+        
+        // ✅ 2. 获取用户信息（包含roles）
+        await this.$store.dispatch('user/getInfo')
+        
+        this.$message.success('登录成功')
+
+        // ✅ 3. 跳转到首页
+        this.$router.push({ path: this.redirect || '/' })
+      } catch (error) {
+        console.error('登录失败:', error)
+        
+        // 更详细的错误信息
+        let errorMessage = '登录失败'
+        if (error.response && error.response.data) {
+          const data = error.response.data
+          errorMessage = data.detail || data.message || data.msg || '登录失败'
+        } else if (error.message) {
+          errorMessage = error.message
         }
-      })
+        
+        this.$message.error(errorMessage)
+        
+        // 如果登录失败，清除token
+        await this.$store.dispatch('user/resetToken')
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
 </script>
+
+<!-- 样式保持不变 -->
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */

@@ -27,7 +27,7 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: false, //process.env.NODE_ENV === 'development',
+  lintOnSave: false, // process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -35,6 +35,20 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    // 添加代理配置
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000', // Django 后端地址
+        changeOrigin: true,
+        // 添加日志
+        onProxyReq: (proxyReq, req, res) => {
+          console.log(`[代理] ${req.method} ${req.url} -> ${proxyReq.path}`)
+        },
+        onError: (err, req, res) => {
+          console.error('[代理错误]', err.message)
+        }
+      }
     },
     before: require('./mock/mock-server.js')
   },

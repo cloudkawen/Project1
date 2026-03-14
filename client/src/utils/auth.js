@@ -1,25 +1,26 @@
-import Cookies from 'js-cookie'
-
-const TokenKey = 'token'
-
+// src/utils/auth.js
 export function getToken() {
-  return Cookies.get(TokenKey)
+  return localStorage.getItem('token')
+}
+
+export function getRefreshToken() {
+  return localStorage.getItem('refresh_token')
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+  localStorage.setItem('token', token)
+}
+
+export function setRefreshToken(token) {
+  localStorage.setItem('refresh_token', token)
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey)
+  localStorage.removeItem('token')
+  localStorage.removeItem('refresh_token')
+  localStorage.removeItem('userInfo')
 }
 
-// export function refreshToken() {
-//   let token = getToken()
-//   let data = {"token": token}
-//   return request({
-//     url: '/token/refresh/',
-//     method: 'post',
-//     data
-//   })
-// }
+export function isLoggedIn() {
+  return !!getToken()
+}

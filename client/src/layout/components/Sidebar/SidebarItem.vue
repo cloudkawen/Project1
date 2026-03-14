@@ -1,95 +1,150 @@
 <template>
-  <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
+  <!-- 单个菜单项 -->
+  <div>
+    <template v-if="!item.hidden">
+      <!-- 没有子菜单的菜单项 -->
+      <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
+        <el-menu-item
+          :index="resolvePath(onlyOneChild.path)"
+          :class="{'submenu-title-noDropdown': !isCollapse}"
+          @click="handleClick(onlyOneChild)"
+        >
+          <item
+            v-if="onlyOneChild.meta"
+            :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
+            :title="onlyOneChild.meta.title"
+            :badge="onlyOneChild.meta.badge"
+            :badge-type="onlyOneChild.meta.badgeType"
+          />
         </el-menu-item>
-      </app-link>
-    </template>
-
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
-      <template slot="title">
-        <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
-      <sidebar-item
-        v-for="child in item.children"
-        :key="child.path"
-        :is-nest="true"
-        :item="child"
-        :base-path="resolvePath(child.path)"
-        class="nest-menu"
-      />
-    </el-submenu>
+
+      <!-- 有子菜单的菜单项 -->
+      <el-submenu
+        v-else
+        :index="resolvePath(item.path)"
+        popper-append-to-body
+      >
+        <template slot="title">
+          <item
+            v-if="item.meta"
+            :icon="item.meta.icon"
+            :title="item.meta.title"
+            :badge="item.meta.badge"
+            :badge-type="item.meta.badgeType"
+          />
+        </template>
+        <!-- 递归渲染子菜单 -->
+        <template v-for="child in item.children">
+          <sidebar-item
+            v-if="!child.hidden"
+            :key="child.path"
+            :item="child"
+            :base-path="resolvePath(child.path)"
+            :search-query="searchQuery"
+          />
+        </template>
+      </el-submenu>
+    </template>
   </div>
 </template>
 
 <script>
 import path from 'path'
-import { isExternal } from '@/utils/validate'
 import Item from './Item'
-import AppLink from './Link'
-import FixiOSBug from './FixiOSBug'
 
 export default {
   name: 'SidebarItem',
-  components: { Item, AppLink },
-  mixins: [FixiOSBug],
+  components: { Item },
   props: {
-    // route object
     item: {
       type: Object,
       required: true
     },
-    isNest: {
-      type: Boolean,
-      default: false
-    },
     basePath: {
+      type: String,
+      default: ''
+    },
+    searchQuery: {
       type: String,
       default: ''
     }
   },
   data() {
-    // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
-    // TODO: refactor with render function
     this.onlyOneChild = null
     return {}
   },
+  computed: {
+    isCollapse() {
+      return this.$store.state.app.sidebar.opened
+    }
+  },
   methods: {
+    // 检查是否只有一个显示的子菜单
     hasOneShowingChild(children = [], parent) {
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
         } else {
-          // Temp set(will be used if only has one showing child)
           this.onlyOneChild = item
           return true
         }
       })
 
-      // When there is only one child router, the child router is displayed by default
       if (showingChildren.length === 1) {
         return true
       }
 
-      // Show parent if there are no child router to display
       if (showingChildren.length === 0) {
-        this.onlyOneChild = { ... parent, path: '', noShowingChildren: true }
+        this.onlyOneChild = { ...parent, path: '', noShowingChildren: true }
         return true
       }
 
       return false
     },
+    // 解析路径
     resolvePath(routePath) {
-      if (isExternal(routePath)) {
+      if (this.isExternal(routePath)) {
         return routePath
       }
-      if (isExternal(this.basePath)) {
+      if (this.isExternal(this.basePath)) {
         return this.basePath
       }
       return path.resolve(this.basePath, routePath)
+    },
+    // 判断是否为外部链接
+    isExternal(path) {
+      return /^(https?:|mailto:|tel:)/.test(path)
+    },
+    // 处理点击事件
+    handleClick(item) {
+      if (this.isExternal(item.path)) {
+        window.open(item.path, '_blank')
+      } else {
+        this.$router.push(this.resolvePath(item.path))
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+// 菜单项样式
+::v-deep .el-menu-item,
+::v-deep .el-submenu__title {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+// 激活状态
+::v-deep .el-menu-item.is-active {
+  background-color: var(--menuActiveText, #409eff) !important;
+  color: #fff !important;
+}
+</style>

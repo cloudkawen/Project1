@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import TaskList, UserViewSet, OrganizationViewSet, PermissionViewSet, RoleViewSet, PositionViewSet, TestView, DictTypeViewSet, DictViewSet, PTaskViewSet
+from .views import TaskList, UserInfoView, UserViewSet, OrganizationViewSet, PermissionViewSet, RoleViewSet, PositionViewSet, TestView, DictTypeViewSet, DictViewSet, PTaskViewSet
 from rest_framework import routers
 
 
@@ -15,5 +15,8 @@ router.register('ptask', PTaskViewSet, basename="ptask")
 urlpatterns = [
     path('', include(router.urls)),
     path('task/', TaskList.as_view()),
-    path('test/', TestView.as_view())
+    path('test/', TestView.as_view()),
+    path('user/info/', UserInfoView.as_view(), name='user_info'),
+
+
 ]
