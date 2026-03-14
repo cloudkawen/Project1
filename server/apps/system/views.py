@@ -354,34 +354,25 @@ class FileViewSet(CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, ListM
         instance.path = settings.MEDIA_URL + instance.file.name
         instance.save()
         
-# server/apps/system/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
 class UserInfoView(APIView):
-    """获取当前用户信息"""
-    
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-        
-        # 获取用户角色
-        roles = []
-        if hasattr(user, 'roles') and user.roles.exists():
-            roles = list(user.roles.values_list('name', flat=True))
-        else:
-            # 如果没有设置角色，默认给 admin
-            roles = ['admin']
-        
+
         return Response({
+            "code": 200,
             "data": {
+                "id": user.id,
+                "username": user.username,
                 "name": user.username,
-                "avatar": getattr(user, 'avatar', '') or '',
-                "roles": roles
-            }
+                "roles": ["admin"],
+                "avatar": "/media/default/avatar.png"
+            },
+            "msg": None
         })
+

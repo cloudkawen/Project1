@@ -17,7 +17,8 @@ urlpatterns = [
     path('task/', TaskList.as_view()),
     path('test/', TestView.as_view()),
     # ✅ 修复：确保用户信息接口路径正确
-    path('user/info/', UserInfoView.as_view(), name='user_info'),
+    path("user/info/", UserInfoView.as_view()),
+
 ]
 
 # 注意：这个URL会被映射到 /api/system/user/info/

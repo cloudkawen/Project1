@@ -31,10 +31,14 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password })
         .then(response => {
-          console.log('Vuex 登录响应:', response)
-          // ✅ 修复：正确获取 access token
-          const token = response.access || response.token
+          console.log('登录API响应:', response)
+          // 尝试多种可能的 token 路径
+          const token = (response && response.access) ||
+                      (response && response.data && response.data.access) ||
+                      (response && response.token) ||
+                      (response && response.data && response.data.token)
           if (!token) {
+            console.error('Token 获取失败，响应结构:', response)
             reject(new Error('登录失败：未收到令牌'))
             return
           }
@@ -43,39 +47,28 @@ const actions = {
           resolve()
         })
         .catch(error => {
-          console.error('Vuex 登录错误:', error)
+          console.error('登录失败:', error)
           reject(error)
         })
     })
   },
 
   // 获取用户信息
-  getInfo({ commit, state }) {
+  getInfo({ commit }) {
     return new Promise((resolve, reject) => {
-      getInfo()
-        .then(response => {
-          console.log('用户信息响应:', response)
-          // ✅ 修复：正确处理响应结构
-          const data = response.data || response
-          if (!data) {
-            reject(new Error('验证失败，请重新登录'))
-            return
-          }
-          const { roles, name, avatar } = data
-          // 角色必须是非空数组
-          if (!roles || roles.length <= 0) {
-            commit('SET_ROLES', ['admin']) // 临时设置为 admin
-          } else {
-            commit('SET_ROLES', roles)
-          }
-          commit('SET_NAME', name || '管理员')
-          commit('SET_AVATAR', avatar || '')
-          resolve(data)
-        })
-        .catch(error => {
-          console.error('获取用户信息失败:', error)
-          reject(error)
-        })
+      getInfo().then(response => {
+        const data = response.data
+
+        const { roles, name, avatar } = data
+
+        commit('SET_ROLES', roles)
+        commit('SET_NAME', name)
+        commit('SET_AVATAR', avatar)
+
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
     })
   },
 

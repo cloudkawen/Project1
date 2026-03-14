@@ -8,11 +8,16 @@ export function login(data) {
     data
   }).then(response => {
     console.log('登录API响应:', response)
-    // Django Simple JWT 返回格式
+
+    // 根据实际返回结构调整
     if (response.access) {
       return response
+    } else if (response.data && response.data.access) {
+      return response.data
+    } else {
+      // 如果没有找到 access，返回原始响应
+      return response
     }
-    throw new Error('登录失败：未收到令牌')
   })
 }
 

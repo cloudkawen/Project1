@@ -47,11 +47,6 @@
   </div>
 </template>
 
-<!-- client/src/views/login/index.vue -->
-<template>
-  <!-- 模板保持不变 -->
-</template>
-
 <script>
 export default {
   name: 'Login',
@@ -61,28 +56,53 @@ export default {
         username: 'root',
         password: ''
       },
+      loginRules: {
+        username: [{ required: true, trigger: 'blur' }],
+        password: [{ required: true, trigger: 'blur' }]
+      },
       loading: false,
       passwordType: 'password',
       redirect: undefined
     }
   },
   methods: {
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus()
+      })
+    },
     async handleLogin() {
       try {
         const valid = await this.$refs.loginForm.validate()
         if (!valid) return
         this.loading = true
-        // 1. 登录获取token
+        console.log('1. 开始登录...')
+        // 1. 登录获取 token
         await this.$store.dispatch('user/login', this.loginForm)
+        console.log('✅ 登录成功，token 已保存')
         // 2. 获取用户信息
+        console.log('2. 获取用户信息...')
         await this.$store.dispatch('user/getInfo')
-        this.$message.success('登录成功')
+        console.log('✅ 用户信息已获取')
         // 3. 跳转到首页
-        this.$router.push({ path: this.redirect || '/' })
+        console.log('3. 跳转到首页...')
+        // 确保 token 存在
+        const token = localStorage.getItem('token')
+        if (!token) {
+          throw new Error('登录成功但未找到 token')
+        }
+        // 使用原生跳转，确保生效
+        setTimeout(() => {
+          window.location.href = this.redirect || '/'
+        }, 100)
       } catch (error) {
-        console.error('登录失败:', error)
+        console.error('❌ 登录失败:', error)
         this.$message.error(error.message || '登录失败')
-      } finally {
         this.loading = false
       }
     }
