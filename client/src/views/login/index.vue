@@ -47,85 +47,41 @@
   </div>
 </template>
 
+<!-- client/src/views/login/index.vue -->
+<template>
+  <!-- 模板保持不变 -->
+</template>
+
 <script>
 export default {
   name: 'Login',
   data() {
-    // 密码验证规则
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 4) {
-        callback(new Error('密码长度小于4位!'))
-      } else {
-        callback()
-      }
-    }
-    
     return {
       loginForm: {
-        username: 'root',  // 默认填充，方便测试
+        username: 'root',
         password: ''
-      },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', message: '请输入账户' }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword, message: '请输入密码' }]
       },
       loading: false,
       passwordType: 'password',
       redirect: undefined
     }
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-      },
-      immediate: true
-    }
-  },
   methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
-    },
     async handleLogin() {
       try {
         const valid = await this.$refs.loginForm.validate()
         if (!valid) return
-
         this.loading = true
-
-        // ✅ 1. 登录获取token
+        // 1. 登录获取token
         await this.$store.dispatch('user/login', this.loginForm)
-        
-        // ✅ 2. 获取用户信息（包含roles）
+        // 2. 获取用户信息
         await this.$store.dispatch('user/getInfo')
-        
         this.$message.success('登录成功')
-
-        // ✅ 3. 跳转到首页
+        // 3. 跳转到首页
         this.$router.push({ path: this.redirect || '/' })
       } catch (error) {
         console.error('登录失败:', error)
-        
-        // 更详细的错误信息
-        let errorMessage = '登录失败'
-        if (error.response && error.response.data) {
-          const data = error.response.data
-          errorMessage = data.detail || data.message || data.msg || '登录失败'
-        } else if (error.message) {
-          errorMessage = error.message
-        }
-        
-        this.$message.error(errorMessage)
-        
-        // 如果登录失败，清除token
-        await this.$store.dispatch('user/resetToken')
+        this.$message.error(error.message || '登录失败')
       } finally {
         this.loading = false
       }
@@ -133,8 +89,6 @@ export default {
   }
 }
 </script>
-
-<!-- 样式保持不变 -->
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */

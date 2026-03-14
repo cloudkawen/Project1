@@ -1,6 +1,13 @@
+<template functional>
+  <div>
+    <svg-icon v-if="props.icon" :icon-class="props.icon" />
+    <span v-if="props.title" slot="title">{{ props.title }}</span>
+  </div>
+</template>
+
 <script>
 export default {
-  name: 'MenuItem',
+  name: 'SidebarItem',
   functional: true,
   props: {
     icon: {
@@ -11,19 +18,6 @@ export default {
       type: String,
       default: ''
     }
-  },
-  render(h, context) {
-    const { icon, title } = context.props
-    const vnodes = []
-
-    if (icon) {
-      vnodes.push(<svg-icon icon-class={icon}/>)
-    }
-
-    if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
-    }
-    return vnodes
   }
 }
 </script>

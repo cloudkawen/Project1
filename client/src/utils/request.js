@@ -1,11 +1,12 @@
+// client/src/utils/request.js
 import axios from 'axios'
-import { Message, MessageBox } from 'element-ui'
-import store from '@/store'
+import { Message } from 'element-ui'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API || '/',
-  timeout: 15000
+  baseURL: '', // 设置为空
+  timeout: 30000, // 增加超时时间
+  withCredentials: true
 })
 
 // 请求拦截器
@@ -28,21 +29,25 @@ service.interceptors.response.use(
     return response.data
   },
   error => {
-    console.error('响应错误:', error.response || error)
+    console.error('API错误:', error.response?.status, error.config?.url)
     if (error.response && error.response.status === 401) {
       Message({
         message: '登录已过期，请重新登录',
         type: 'error',
         duration: 3000
       })
-      // 清除 token
       localStorage.removeItem('token')
       localStorage.removeItem('refresh_token')
       localStorage.removeItem('userInfo')
-      // 跳转到登录页
       setTimeout(() => {
         window.location.href = '/login'
       }, 1500)
+    } else if (error.code === 'ECONNABORTED') {
+      Message({
+        message: '请求超时，请检查网络连接',
+        type: 'error',
+        duration: 5000
+      })
     } else if (error.response) {
       const message = error.response.data.detail ||
                      error.response.data.message ||

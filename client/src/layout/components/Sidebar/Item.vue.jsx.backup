@@ -1,0 +1,23 @@
+<template functional>
+  <div>
+    <svg-icon v-if="props.icon" :icon-class="props.icon" />
+    <span v-if="props.title" slot="title">{{ props.title }}</span>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'SidebarItem',
+  functional: true,
+  props: {
+    icon: {
+      type: String,
+      default: ''
+    },
+    title: {
+      type: String,
+      default: ''
+    }
+  }
+}
+</script>

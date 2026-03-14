@@ -78,11 +78,9 @@ export default {
   width: 100%;
   overflow: hidden;
   background: $bgColor;
-  
   &[data-theme="dark"] {
     background: #1a1a1a;
   }
-  
   &.mobile.openSidebar {
     position: fixed;
     top: 0;
@@ -120,12 +118,10 @@ export default {
   overflow: hidden;
   -webkit-transform: translateZ(0);
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
-  
   // 隐藏滚动条
   &::-webkit-scrollbar {
     width: 0;
   }
-  
   // 深色主题
   [data-theme="dark"] & {
     background-color: #001529;
@@ -141,11 +137,9 @@ export default {
   position: relative;
   background: $bgColor;
   overflow: hidden;
-  
   &[data-theme="dark"] {
     background: #141414;
   }
-  
   // 移动端适配
   @media screen and (max-width: 768px) {
     margin-left: 0;
@@ -155,7 +149,6 @@ export default {
 // 侧边栏折叠时的主内容区域
 .main-container-collapse {
   margin-left: $sidebarCollapseWidth;
-  
   @media screen and (max-width: 768px) {
     margin-left: 0;
   }
@@ -171,22 +164,18 @@ export default {
   transition: width 0.3s;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   background: $navBarBg;
-  
   [data-theme="dark"] & {
     background: #1f1f1f;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   }
-  
   // 侧边栏折叠时的宽度
   .hideSidebar & {
     width: calc(100% - #{$sidebarCollapseWidth});
   }
-  
   // 移动端适配
   .mobile & {
     width: 100%;
   }
-  
   @media screen and (max-width: 768px) {
     width: 100% !important;
   }
@@ -197,11 +186,9 @@ export default {
   .sidebar-container {
     width: $sidebarCollapseWidth !important;
   }
-  
   .main-container {
     margin-left: $sidebarCollapseWidth;
   }
-  
   .fixed-header {
     width: calc(100% - #{$sidebarCollapseWidth});
   }
@@ -213,28 +200,23 @@ export default {
     transition: transform 0.3s;
     width: $sidebarWidth !important;
   }
-  
   &.openSidebar {
     .sidebar-container {
       transform: translate3d(0, 0, 0);
     }
-    
     .main-container {
       margin-left: 0;
     }
   }
-  
   &.hideSidebar {
     .sidebar-container {
       pointer-events: none;
       transform: translate3d(-$sidebarWidth, 0, 0);
     }
-    
     .main-container {
       margin-left: 0;
     }
   }
-  
   .fixed-header {
     width: 100%;
   }
@@ -253,7 +235,6 @@ export default {
   .main-container {
     margin-left: 0;
   }
-  
   .fixed-header {
     width: 100%;
   }
