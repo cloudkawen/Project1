@@ -6,7 +6,8 @@ const state = {
   token: getToken(),
   name: '',
   avatar: '',
-  roles: []
+  roles: [],
+  perms: []
 }
 
 const mutations = {
@@ -21,6 +22,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_PERMS: (state, perms) => {
+    state.perms = perms
   }
 }
 
@@ -59,9 +63,10 @@ const actions = {
       getInfo().then(response => {
         const data = response.data
 
-        const { roles, name, avatar } = data
+        const { roles, name, avatar, perms } = data
 
         commit('SET_ROLES', roles)
+        commit('SET_PERMS', perms || [])
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
 
@@ -79,6 +84,7 @@ const actions = {
         .then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
+          commit('SET_PERMS', [])
           removeToken()
           resolve()
         })
@@ -87,6 +93,7 @@ const actions = {
           // 即使API失败，也要清除本地token
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
+          commit('SET_PERMS', [])
           removeToken()
           resolve()
         })
@@ -98,6 +105,7 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_PERMS', [])
       removeToken()
       resolve()
     })
