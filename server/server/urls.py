@@ -25,7 +25,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 from django.views.generic import TemplateView
-from apps.dashboard.views import MockDashboardAPIView
+from apps.dashboard.views import CachedDashboardAPIView
 
 router = routers.DefaultRouter()
 router.register('', FileViewSet, basename="file")
@@ -55,7 +55,7 @@ urlpatterns = [
     path('api/wf/', include('apps.wf.urls')),
     path('api/', include('apps.items.urls')),
     # 仪表盘接口
-    path('api/dashboard/', MockDashboardAPIView.as_view(), name='dashboard'),
+    path('api/dashboard/', CachedDashboardAPIView.as_view(), name='dashboard'),
     # api文档
     path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
