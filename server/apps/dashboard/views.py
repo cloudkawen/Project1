@@ -181,9 +181,7 @@ class DashboardDataService:
 
 
 class CachedDashboardAPIView(APIView):
-    """
-    带缓存的仪表盘数据接口 (主视图)
-    """
+    """带缓存的仪表盘数据接口"""
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
@@ -194,7 +192,7 @@ class CachedDashboardAPIView(APIView):
             def fetch_dashboard_data():
                 return DashboardDataService.get_all_dashboard_data(user)
             
-            # 从缓存获取或查询数据库
+            # 调用缓存
             data, is_cached, cache_key = OptimizedDashboardCache.get_dashboard_data(
                 user.id, 
                 fetch_dashboard_data
@@ -211,10 +209,11 @@ class CachedDashboardAPIView(APIView):
         except Exception as e:
             logger.error(f"获取仪表盘数据失败: {e}", exc_info=True)
             
+            # 返回错误信息
             return Response({
                 'code': 500,
                 'data': None,
-                'msg': '服务器内部错误，请稍后重试。',
+                'msg': str(e),  # 返回具体错误信息
                 'timestamp': timezone.now().isoformat()
             }, status=500)
 
@@ -270,3 +269,68 @@ class SimpleDashboardAPIView(APIView):
             },
             'msg': 'success'
         })
+class DebugDashboardAPIView(APIView):
+    """仪表盘调试接口"""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """调试模式，返回数据库查询结果"""
+        from django.db import connection
+        from django.core.cache import cache
+        
+        user = request.user
+        response_data = {}
+        
+        try:
+            # 1. 查询用户信息
+            response_data['user'] = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+            
+            # 2. 统计物品数量
+            from apps.items.models import Item, Category
+            
+            items_count = Item.objects.filter(user=user).count()
+            categories_count = Category.objects.filter(user=user).count()
+            
+            response_data['counts'] = {
+                'items': items_count,
+                'categories': categories_count
+            }
+            
+            # 3. 获取缓存信息
+            cache_key = f"dashboard_{user.id}_v1"
+            cache_info = {
+                'key': cache_key,
+                'has_cache': cache.get(cache_key) is not None,
+                'ttl': cache.ttl(cache_key)
+            }
+            
+            response_data['cache_info'] = cache_info
+            
+            # 4. 获取最近的物品
+            recent_items = Item.objects.filter(user=user).order_by('-created_at')[:5]
+            response_data['recent_items'] = [
+                {
+                    'id': item.id,
+                    'name': item.name,
+                    'created_at': item.created_at
+                }
+                for item in recent_items
+            ]
+            
+            return Response({
+                'code': 200,
+                'data': response_data,
+                'msg': '调试信息'
+            })
+            
+        except Exception as e:
+            return Response({
+                'code': 500,
+                'data': None,
+                'msg': str(e)
+            }, status=500)
+        

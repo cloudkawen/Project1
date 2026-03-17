@@ -156,17 +156,27 @@ export const asyncRoutes = [
   }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // 需要服务器支持
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+export const createRouter = () => {
+  console.log('创建路由实例...')
+  return new Router({
+    // mode: 'history', // 需要服务器支持
+    mode: 'hash', // 使用hash模式避免服务器配置问题
+    base: process.env.BASE_URL,
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
+}
 
+// 修复2：确保router实例正确创建
 const router = createRouter()
 
+// 修复3：正确的resetRouter函数
 export function resetRouter() {
+  console.log('重置路由...')
   const newRouter = createRouter()
+  // 替换router的matcher
   router.matcher = newRouter.matcher
 }
 
+// 修复4：确保正确导出router实例
 export default router

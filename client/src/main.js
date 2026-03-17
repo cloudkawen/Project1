@@ -13,7 +13,7 @@ import store from './store'
 import router from './router'
 
 import '@/icons' // icon
-import '@/permission' // permission control
+import './permission' // permission control
 import tableHeight from '@/directive/el-table/index'
 Vue.use(tableHeight)
 /**
@@ -34,7 +34,8 @@ if (process.env.NODE_ENV === 'production') {
 // 如果想要中文版 element-ui，按如下方式声明
 Vue.use(ElementUI, { size: 'medium' })
 Vue.config.productionTip = false
-
+import permission from './directive/permission'
+Vue.directive('permission', permission)
 new Vue({
   el: '#app',
   router,

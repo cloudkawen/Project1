@@ -20,7 +20,7 @@ class Category(models.Model):
 
 class Item(models.Model):
     name = models.CharField(max_length=200, verbose_name="物品名称")
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, related_name='items',on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     expire_date = models.DateField(db_index=True, null=True, blank=True)  # 允许为空
     created_at = models.DateTimeField(auto_now_add=True)  # 创建时间
