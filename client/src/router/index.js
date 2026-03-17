@@ -47,11 +47,6 @@ export const constantRoutes = [
         }
       }
     ]
-  },
-  {
-    path: '*',
-    redirect: '/404',
-    hidden: true
   }
 ]
 
@@ -94,7 +89,7 @@ export const asyncRoutes = [
       {
         path: 'index',
         name: 'CategoriesList',
-        component: () => import('@/views/category/index'),
+        component: () => import('@/views/categories/index'),
         meta: {
           title: '分类列表',
           icon: 'el-icon-list',

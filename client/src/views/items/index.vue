@@ -468,16 +468,27 @@ export default {
     formatDate,
     // 获取当前登录用户
     getCurrentUser() {
-      const userInfo = this.$store.getters.userInfo ||
-                     JSON.parse(localStorage.getItem('userInfo')) ||
-                     JSON.parse(sessionStorage.getItem('userInfo'))
-      if (userInfo) {
-        this.form.user = userInfo.id || userInfo.userId
-        this.form.user_name = userInfo.username || userInfo.name || userInfo.nickname
-      } else {
-        this.$message.warning('请先登录')
-        this.$router.push('/login')
+      console.log('🔍 获取当前用户信息...')
+      // 1. 从 Vuex 获取
+      const userState = this.$store.state.user
+      console.log('Vuex user 状态:', userState)
+      if (userState && (userState.id || userState.token)) {
+        this.form.user = userState.id || 1 // 如果没有 id，使用默认值
+        this.form.user_name = userState.name || userState.username || '管理员'
+        console.log('✅ 从 Vuex 获取到用户信息:', this.form.user_name)
+        return
       }
+      // 2. 从 localStorage token 中提取（如果有）
+      const token = localStorage.getItem('token')
+      if (token) {
+        console.log('✅ 有 token，但用户信息不完整，使用默认用户')
+        this.form.user = 1
+        this.form.user_name = '管理员'
+        return
+      }
+      // 3. 没有 token，重定向到登录页
+      console.warn('❌ 没有用户信息，重定向到登录页')
+      this.$router.push('/login')
     },
     // 获取物品列表
     async fetchData() {

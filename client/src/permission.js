@@ -1,14 +1,10 @@
-// src/permission.js
 import router, { resetRouter } from './router' // 添加 resetRouter 导入
 import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-
 NProgress.configure({ showSpinner: false })
-
 const whiteList = ['/login']
-
 router.beforeEach(async(to, from, next) => {
   NProgress.start()
   const hasToken = store.getters.token || localStorage.getItem('token')
@@ -18,16 +14,16 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       try {
-        const hasRoles = store.getters.roles && store.getters.roles.length > 0
-        if (hasRoles) {
+        const hasPerms = store.getters.perms && store.getters.perms.length > 0
+        if (hasPerms) {
           next()
         } else {
           // 获取用户信息
-          const { roles } = await store.dispatch('user/getInfo')
-          // ✅ 关键修复：重置路由，避免重复添加
+          const { perms } = await store.dispatch('user/getInfo')
+          // 重置路由，避免重复添加
           resetRouter()
-          // 生成可访问的路由
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          // 根据权限生成可访问的路由
+          const accessRoutes = await store.dispatch('permission/generateRoutes', perms)
           // 动态添加路由
           router.addRoutes(accessRoutes)
           // 使用 replace: true 避免导航重复
@@ -50,7 +46,6 @@ router.beforeEach(async(to, from, next) => {
     }
   }
 })
-
 router.afterEach(() => {
   NProgress.done()
 })

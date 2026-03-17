@@ -359,20 +359,21 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 
+# server/apps/system/views.py
 class UserInfoView(APIView):
+    """获取当前用户信息"""
+    
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-
+        
+        # 确保返回 roles 字段
         return Response({
-            "code": 200,
             "data": {
-                "id": user.id,
-                "username": user.username,
                 "name": user.username,
-                "roles": ["admin"],
-                "avatar": "/media/default/avatar.png"
-            },
-            "msg": None
+                "avatar": "",
+                "roles": ["admin"]  # 确保包含 roles 字段
+            }
         })
-
+    
