@@ -26,8 +26,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 from django.views.generic import TemplateView
-from apps.dashboard.views import CachedDashboardAPIView, MockDashboardAPIView, OptimizedDashboardAPIView, SimpleDashboardAPIView
-
+from apps.dashboard.views import CachedDashboardAPIView
 
 router = routers.DefaultRouter()
 router.register('', FileViewSet, basename="file")
@@ -57,18 +56,7 @@ urlpatterns = [
     path('api/wf/', include('apps.wf.urls')),
     path('api/', include('apps.items.urls')),
     # 仪表盘接口
-    # 主仪表盘接口（带缓存）
-    path('', CachedDashboardAPIView.as_view(), name='dashboard'),
-    
-    # 无缓存版本（用于测试）
-    path('no-cache/', OptimizedDashboardAPIView.as_view(), name='dashboard-no-cache'),
-    
-    # 向后兼容版本
-    path('mock/', MockDashboardAPIView.as_view(), name='dashboard-mock'),
-    
-    # 简单测试版本
-    path('simple/', SimpleDashboardAPIView.as_view(), name='dashboard-simple'),
-    
+    path('api/dashboard/', CachedDashboardAPIView.as_view(), name='dashboard'),
     # api文档
     path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
